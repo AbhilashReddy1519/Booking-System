@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.app.bs.booking_system.modules.bookings.Booking;
 import com.app.bs.booking_system.modules.seats.Seat;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +34,7 @@ public class BookingSeat {
 
   @ManyToOne
   @JoinColumn(name = "booking_id")
+  @JsonBackReference("booking-bookingSeat")
   private Booking booking;
 
   @ManyToOne

@@ -37,6 +37,6 @@ public class Movie {
   private String imgSource;
 
   @OneToMany(mappedBy = "movie")
-  @JsonManagedReference
+  @JsonManagedReference("movie-show")
   private List<Show> shows;
 }

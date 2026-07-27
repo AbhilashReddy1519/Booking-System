@@ -17,8 +17,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CreateBookingDTO {
   @NotNull(message = "Show ID should not be empty")
-  private UUID showId;
+  private UUID show_id;
 
   @NotEmpty(message = "At least one seat must be selected")
-  private List<UUID> seatIds;
+  private List<UUID> seat_ids;
 }

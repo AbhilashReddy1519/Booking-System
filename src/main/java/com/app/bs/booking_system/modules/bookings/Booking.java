@@ -40,10 +40,10 @@ public class Booking {
 
   @ManyToOne
   @JoinColumn(name = "show_id")
-  @JsonBackReference
+  @JsonBackReference("show-booking")
   private Show show;
 
   @OneToMany(mappedBy = "booking")
-  @JsonManagedReference
+  @JsonManagedReference("booking-bookingSeat")
   private List<BookingSeat> bookingSeats;
 }

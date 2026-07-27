@@ -15,7 +15,4 @@ import lombok.Setter;
 public class CreateLanguageDTO {
   @NotBlank(message = "Language should not be empty")
   private String language;
-
-  @NotBlank(message = "Theater Id should not be empty")
-  private UUID movie_id;
 }

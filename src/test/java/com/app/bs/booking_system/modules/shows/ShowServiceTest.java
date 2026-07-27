@@ -1,6 +1,5 @@
 package com.app.bs.booking_system.modules.shows;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -22,9 +21,8 @@ import com.app.bs.booking_system.modules.screens.Screen;
 import com.app.bs.booking_system.modules.screens.ScreenRepository;
 import com.app.bs.booking_system.modules.seats.Seat;
 import com.app.bs.booking_system.modules.seats.SeatRepository;
-import com.app.bs.booking_system.modules.show_seats.ShowSeat;
 import com.app.bs.booking_system.modules.show_seats.ShowSeatRepository;
-import com.app.bs.booking_system.modules.show_seats.ShowSeatStatus;
+import com.app.bs.booking_system.modules.show_seats.ShowSeatService;
 import com.app.bs.booking_system.modules.shows.dto.CreateShowDTO;
 
 class ShowServiceTest {
@@ -37,6 +35,7 @@ class ShowServiceTest {
     LanguageRepository languageRepository = mock(LanguageRepository.class);
     SeatRepository seatRepository = mock(SeatRepository.class);
     ShowSeatRepository showSeatRepository = mock(ShowSeatRepository.class);
+    ShowSeatService showSeatService = mock(ShowSeatService.class);
 
     ShowService showService = new ShowService(
         showRepository,
@@ -44,7 +43,8 @@ class ShowServiceTest {
         screenRepository,
         languageRepository,
         seatRepository,
-        showSeatRepository
+        showSeatRepository,
+        showSeatService
     );
 
     UUID movieId = UUID.randomUUID();
@@ -74,6 +74,6 @@ class ShowServiceTest {
     Show createdShow = showService.createShow(dto);
 
     assertNotNull(createdShow);
-    verify(showSeatRepository).saveAll(any(List.class));
+    verify(showSeatService).createShowSeats(any(Show.class), any(Screen.class));
   }
 }

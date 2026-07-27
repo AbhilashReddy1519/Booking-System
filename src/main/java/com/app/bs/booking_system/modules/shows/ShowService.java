@@ -11,6 +11,7 @@ import com.app.bs.booking_system.modules.movies.MovieRepository;
 import com.app.bs.booking_system.modules.screens.Screen;
 import com.app.bs.booking_system.modules.screens.ScreenRepository;
 import com.app.bs.booking_system.modules.seats.SeatRepository;
+import com.app.bs.booking_system.modules.show_seats.ShowSeatRepository;
 import com.app.bs.booking_system.modules.show_seats.ShowSeatService;
 import com.app.bs.booking_system.modules.shows.dto.CreateShowDTO;
 
@@ -28,7 +29,7 @@ public class ShowService {
       ScreenRepository screenRepository,
       LanguageRepository languageRepository,
       SeatRepository seatRepository,
-      ShowSeatService showSeatService) {
+      ShowSeatRepository showSeatRepository, ShowSeatService showSeatService) {
     this.showRepository = showRepository;
     this.movieRepository = movieRepository;
     this.screenRepository = screenRepository;

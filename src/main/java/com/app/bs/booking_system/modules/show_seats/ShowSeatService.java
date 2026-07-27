@@ -3,11 +3,14 @@ package com.app.bs.booking_system.modules.show_seats;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.app.bs.booking_system.modules.screens.Screen;
 import com.app.bs.booking_system.modules.seats.Seat;
 import com.app.bs.booking_system.modules.seats.SeatRepository;
 import com.app.bs.booking_system.modules.shows.Show;
 
+@Service
 public class ShowSeatService {
   private final ShowSeatRepository showSeatRepository;
   private final SeatRepository seatRepository;

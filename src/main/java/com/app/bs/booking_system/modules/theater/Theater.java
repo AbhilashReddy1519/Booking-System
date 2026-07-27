@@ -35,9 +35,9 @@ public class Theater {
   private String name;
 
   @NotBlank(message = "Address name cannot be empty")
-  private String Address;
+  private String address;
 
   @OneToMany(mappedBy = "theater")
-  @JsonManagedReference
+  @JsonManagedReference("theater-screen")
   private List<Screen> screens;
 }

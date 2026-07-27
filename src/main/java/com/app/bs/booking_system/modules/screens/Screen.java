@@ -42,14 +42,13 @@ public class Screen {
 
   @ManyToOne
   @JoinColumn(name = "theater_id")
-  @JsonBackReference
+  @JsonBackReference("theater-screen")
   private Theater theater;
 
   @OneToMany(mappedBy = "screen")
-  @JsonManagedReference
+  @JsonManagedReference("screen-show")
   private List<Show> shows;
 
   @OneToMany(mappedBy = "screen")
-  @JsonManagedReference
   private List<Seat> seats;
 }

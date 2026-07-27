@@ -44,7 +44,7 @@ public class BookingService {
 
   @Transactional
   public Booking createBooking(CreateBookingDTO createBookingDTO) {
-    Show show = showRepository.findById(createBookingDTO.getShowId())
+    Show show = showRepository.findById(createBookingDTO.getShow_id())
         .orElseThrow(() -> new RuntimeException("Show not found"));
 
     Booking booking = Booking.builder()
@@ -55,7 +55,7 @@ public class BookingService {
     booking = bookingRepository.save(booking);
 
     List<BookingSeat> bookingSeats = new ArrayList<>();
-    for (UUID seatId : createBookingDTO.getSeatIds()) {
+    for (UUID seatId : createBookingDTO.getSeat_ids()) {
       Seat seat = seatRepository.findById(seatId)
           .orElseThrow(() -> new RuntimeException("Seat is not found"));
 
@@ -74,7 +74,7 @@ public class BookingService {
     // todo: Payment Service
     try {
       System.out.println("Processing payment...");
-      Thread.sleep(2 * 60 * 1000);
+      Thread.sleep(1 * 30 * 1000);
       System.out.println("Payment completed.");
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
@@ -103,7 +103,7 @@ public class BookingService {
     ShowSeat newShowSeat = ShowSeat.builder()
         .show(show)
         .seat(seat)
-        .status(ShowSeatStatus.BOOKED)
+        .status(ShowSeatStatus.RESERVED)
         .build();
 
     try {
