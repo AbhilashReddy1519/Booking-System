@@ -1,0 +1,25 @@
+package com.app.bs.booking_system.modules.seats;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.app.bs.booking_system.modules.seats.dto.CreateSeatsDTO;
+
+@RestController
+@RequestMapping("/seats")
+public class SeatController {
+  private final SeatService seatService;
+
+  public SeatController(SeatService seatService) {
+    this.seatService = seatService;
+  }
+
+  @PostMapping("")
+  public List<Seat> createSeats(@RequestBody CreateSeatsDTO seatDTO) {
+    return seatService.createSeats(seatDTO);
+  }
+}

@@ -1,0 +1,21 @@
+services:
+  booking-system-db:
+    image: postgres:16
+    container_name: booking_system_db
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 4001:5432
+    volumes:
+      - booking_system_data:/var/lib/postgresql/data
+    networks:
+      - bs
+
+  
+
+volumes:
+  booking_system_data:
+
+networks:
+  bs:
