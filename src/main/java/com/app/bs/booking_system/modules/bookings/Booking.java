@@ -1,11 +1,14 @@
 package com.app.bs.booking_system.modules.bookings;
 
+import java.util.List;
 import java.util.UUID;
 
-import com.app.bs.booking_system.modules.seats.Seat;
+import com.app.bs.booking_system.modules.booking_seat.BookingSeat;
 import com.app.bs.booking_system.modules.shows.Show;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,8 +44,7 @@ public class Booking {
   @JsonBackReference
   private Show show;
 
-  @ManyToOne
-  @JoinColumn(name = "seat_id")
-  @JsonBackReference
-  private Seat seat;
+  @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+  @JsonManagedReference
+  private List<BookingSeat> bookingSeats;
 }

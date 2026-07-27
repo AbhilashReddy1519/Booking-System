@@ -1,5 +1,6 @@
 package com.app.bs.booking_system.modules.seats;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class SeatService {
   public List<Seat> createSeats(CreateSeatsDTO seatsDTO) {
     Screen screen = screenRepository.findById(seatsDTO.getScreen_id())
       .orElseThrow(() -> new RuntimeException("Screen not found"));
-
+    List<Seat> seats = new ArrayList<>();
     for(char i = 'A';i <= 'J';i++) {
       for(int j = 1;j <= 10;j++) {
         StringBuilder seatName = new StringBuilder("");
@@ -33,11 +34,10 @@ public class SeatService {
           .seatName(seatName.toString())
           .screen(screen)
           .build();
-
-        seatRepository.save(seat);
+        seats.add(seat);
       }
     }
-
+    seatRepository.saveAll(seats);
     return seatRepository.findAllByScreen(screen);
   } 
 
