@@ -71,7 +71,7 @@ public class BookingService {
 
     bookingSeatRepository.saveAll(bookingSeats);
 
-    // TODO: Payment Service
+    // todo: Payment Service
     try {
       System.out.println("Processing payment...");
       Thread.sleep(2 * 60 * 1000);

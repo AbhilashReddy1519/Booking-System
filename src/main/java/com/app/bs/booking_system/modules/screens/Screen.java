@@ -1,6 +1,5 @@
 package com.app.bs.booking_system.modules.screens;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -46,11 +45,11 @@ public class Screen {
   @JsonBackReference
   private Theater theater;
 
-  @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "screen")
   @JsonManagedReference
   private List<Show> shows;
 
-  @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "screen")
   @JsonManagedReference
   private List<Seat> seats;
 }

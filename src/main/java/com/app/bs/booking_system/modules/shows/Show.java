@@ -11,7 +11,6 @@ import com.app.bs.booking_system.modules.screens.Screen;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -60,7 +59,7 @@ public class Show {
   @JsonBackReference
   private Language language;
 
-  @OneToMany(mappedBy = "show" , cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "show")
   @JsonManagedReference
   private List<Booking> bookings;
 }

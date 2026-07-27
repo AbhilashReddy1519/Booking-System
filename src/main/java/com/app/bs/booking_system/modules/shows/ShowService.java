@@ -1,6 +1,5 @@
 package com.app.bs.booking_system.modules.shows;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,11 +10,8 @@ import com.app.bs.booking_system.modules.movies.Movie;
 import com.app.bs.booking_system.modules.movies.MovieRepository;
 import com.app.bs.booking_system.modules.screens.Screen;
 import com.app.bs.booking_system.modules.screens.ScreenRepository;
-import com.app.bs.booking_system.modules.seats.Seat;
 import com.app.bs.booking_system.modules.seats.SeatRepository;
-import com.app.bs.booking_system.modules.show_seats.ShowSeat;
-import com.app.bs.booking_system.modules.show_seats.ShowSeatRepository;
-import com.app.bs.booking_system.modules.show_seats.ShowSeatStatus;
+import com.app.bs.booking_system.modules.show_seats.ShowSeatService;
 import com.app.bs.booking_system.modules.shows.dto.CreateShowDTO;
 
 @Service
@@ -24,8 +20,7 @@ public class ShowService {
   private final MovieRepository movieRepository;
   private final ScreenRepository screenRepository;
   private final LanguageRepository languageRepository;
-  private final SeatRepository seatRepository;
-  private final ShowSeatRepository showSeatRepository;
+  private final ShowSeatService showSeatService;
 
   public ShowService(
       ShowRepository showRepository,
@@ -33,13 +28,12 @@ public class ShowService {
       ScreenRepository screenRepository,
       LanguageRepository languageRepository,
       SeatRepository seatRepository,
-      ShowSeatRepository showSeatRepository) {
+      ShowSeatService showSeatService) {
     this.showRepository = showRepository;
     this.movieRepository = movieRepository;
     this.screenRepository = screenRepository;
     this.languageRepository = languageRepository;
-    this.seatRepository = seatRepository;
-    this.showSeatRepository = showSeatRepository;
+    this.showSeatService = showSeatService;
   }
 
   public Show createShow(CreateShowDTO showDTO) {
@@ -59,21 +53,8 @@ public class ShowService {
       .build();
 
     Show savedShow = showRepository.save(show);
-
-    List<Seat> seats = seatRepository.findAllByScreen(screen);
-    List<ShowSeat> showSeats = new ArrayList<>();
-    for (Seat seat : seats) {
-      showSeats.add(ShowSeat.builder()
-          .show(savedShow)
-          .seat(seat)
-          .status(ShowSeatStatus.AVAILABLE)
-          .build());
-    }
-
-    if (!showSeats.isEmpty()) {
-      showSeatRepository.saveAll(showSeats);
-    }
-
+    // Create showSeats
+    showSeatService.createShowSeats(savedShow, screen);
     return savedShow;
   }
 

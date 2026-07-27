@@ -8,7 +8,6 @@ import com.app.bs.booking_system.modules.shows.Show;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -44,7 +43,7 @@ public class Booking {
   @JsonBackReference
   private Show show;
 
-  @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "booking")
   @JsonManagedReference
   private List<BookingSeat> bookingSeats;
 }

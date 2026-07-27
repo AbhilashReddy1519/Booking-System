@@ -8,7 +8,6 @@ import com.app.bs.booking_system.modules.shows.Show;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,7 +43,7 @@ public class Language {
   @JsonBackReference
   private Movie movie;
 
-  @OneToMany(mappedBy = "language", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "language")
   @JsonManagedReference
   private List<Show> shows;
 
