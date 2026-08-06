@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.app.bs.booking_system.modules.booking_seat.BookingSeat;
+import com.app.bs.booking_system.modules.payment.Payment;
 import com.app.bs.booking_system.modules.shows.Show;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -18,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,6 +50,9 @@ public class Booking {
   @OneToMany(mappedBy = "booking")
   @JsonManagedReference("booking-bookingSeat")
   private List<BookingSeat> bookingSeats;
+
+  @OneToOne(mappedBy = "booking")
+  private Payment payment;
 
   @Column(name = "expires_at")
   private LocalDateTime expiresAt;
