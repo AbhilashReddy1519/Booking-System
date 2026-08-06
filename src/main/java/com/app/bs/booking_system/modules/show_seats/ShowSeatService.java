@@ -22,7 +22,7 @@ public class ShowSeatService {
   public void createShowSeats(Show show, Screen screen) {
     List<Seat> seats = seatRepository.findAllByScreen(screen);
     
-    if(seats.size() == 0) {
+    if(seats.isEmpty()) {
       throw new RuntimeException("No seats found for screen");
     }
 

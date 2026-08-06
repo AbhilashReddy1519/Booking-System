@@ -1,7 +1,5 @@
 package com.app.bs.booking_system.modules.languages.dto;
 
-import java.util.UUID;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
