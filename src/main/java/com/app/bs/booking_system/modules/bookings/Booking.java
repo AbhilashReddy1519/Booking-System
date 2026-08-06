@@ -1,5 +1,6 @@
 package com.app.bs.booking_system.modules.bookings;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ import com.app.bs.booking_system.modules.shows.Show;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -46,4 +48,7 @@ public class Booking {
   @OneToMany(mappedBy = "booking")
   @JsonManagedReference("booking-bookingSeat")
   private List<BookingSeat> bookingSeats;
+
+  @Column(name = "expires_at")
+  private LocalDateTime expiresAt;
 }

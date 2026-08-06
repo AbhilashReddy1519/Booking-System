@@ -1,18 +1,15 @@
 package com.app.bs.booking_system.modules.bookings;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.app.bs.booking_system.modules.booking_seat.BookingSeat;
 import com.app.bs.booking_system.modules.booking_seat.BookingSeatRepository;
 import com.app.bs.booking_system.modules.bookings.dto.CreateBookingDTO;
-import com.app.bs.booking_system.modules.seats.Seat;
-import com.app.bs.booking_system.modules.seats.SeatRepository;
 import com.app.bs.booking_system.modules.show_seats.ShowSeat;
 import com.app.bs.booking_system.modules.show_seats.ShowSeatRepository;
 import com.app.bs.booking_system.modules.show_seats.ShowSeatStatus;
@@ -23,23 +20,19 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class BookingService {
-  private final SeatRepository seatRepository;
+  private final BookingSeatRepository bookingSeatRepository;
   private final BookingRepository bookingRepository;
   private final ShowRepository showRepository;
-  private final BookingSeatRepository bookingSeatRepository;
   private final ShowSeatRepository showSeatRepository;
 
   public BookingService(
       BookingRepository bookingRepository,
       ShowRepository showRepository,
-      BookingSeatRepository bookingSeatRepository,
-      SeatRepository seatRepository,
-      ShowSeatRepository showSeatRepository) {
+      ShowSeatRepository showSeatRepository, BookingSeatRepository bookingSeatRepository) {
     this.bookingRepository = bookingRepository;
     this.showRepository = showRepository;
-    this.bookingSeatRepository = bookingSeatRepository;
-    this.seatRepository = seatRepository;
     this.showSeatRepository = showSeatRepository;
+    this.bookingSeatRepository = bookingSeatRepository;
   }
 
   @Transactional
@@ -47,76 +40,59 @@ public class BookingService {
     Show show = showRepository.findById(createBookingDTO.getShow_id())
         .orElseThrow(() -> new RuntimeException("Show not found"));
 
+    // Sort to acquire locks consistently
+    List<UUID> seatIds = new ArrayList<>(createBookingDTO.getSeat_ids());
+    if (seatIds.contains(null)) {
+      throw new IllegalArgumentException("Seat IDs cannot contain null.");
+    }
+    seatIds.sort(UUID::compareTo);
+    List<ShowSeat> showSeats = showSeatRepository.findAllByShowIdAndSeatIdForUpdate(show, seatIds);
+
     Booking booking = Booking.builder()
         .show(show)
         .status(BookingStatus.PROCESSING)
         .build();
 
-    booking = bookingRepository.save(booking);
+    bookingRepository.save(booking);
 
     List<BookingSeat> bookingSeats = new ArrayList<>();
-    for (UUID seatId : createBookingDTO.getSeat_ids()) {
-      Seat seat = seatRepository.findById(seatId)
-          .orElseThrow(() -> new RuntimeException("Seat is not found"));
-
-      reserveSeat(show, seat);
+    if (showSeats.size() != createBookingDTO.getSeat_ids().size()) {
+      throw new IllegalStateException("Invalid seat selection.");
+    }
+    for (ShowSeat showSeat : showSeats) {
+      if (showSeat.getStatus() != ShowSeatStatus.AVAILABLE) {
+        throw new IllegalStateException("One or more seats are already reserved.");
+      }
+      showSeat.setStatus(ShowSeatStatus.RESERVED);
 
       BookingSeat bookingSeat = BookingSeat.builder()
-          .seat(seat)
           .booking(booking)
+          .seat(showSeat.getSeat())
           .build();
 
       bookingSeats.add(bookingSeat);
     }
 
     bookingSeatRepository.saveAll(bookingSeats);
-
-    // todo: Payment Service
-    try {
-      System.out.println("Processing payment...");
-      Thread.sleep(1 * 30 * 1000);
-      System.out.println("Payment completed.");
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException("Payment process interrupted", e);
-    }
-
-    booking.setStatus(BookingStatus.BOOKED);
     booking.setBookingSeats(bookingSeats);
-    return bookingRepository.save(booking);
+    booking.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+    return booking;
   }
 
   @Transactional
-  public void reserveSeat(Show show, Seat seat) {
-    Optional<ShowSeat> existingSeat = showSeatRepository.findByShowIdAndSeatIdForUpdate(show.getId(), seat.getId());
-
-    if (existingSeat.isPresent()) {
-      ShowSeat showSeat = existingSeat.get();
-      if (showSeat.getStatus() == ShowSeatStatus.BOOKED || showSeat.getStatus() == ShowSeatStatus.RESERVED) {
-        throw new IllegalStateException("Seat already booked for the selected show");
-      }
-      showSeat.setStatus(ShowSeatStatus.RESERVED);
-      showSeatRepository.save(showSeat);
-      return;
+  public void expireBooking() {
+    List<Booking> pendingBookings = bookingRepository.findAllByStatusAndExpiresAtBefore(BookingStatus.PROCESSING,
+        LocalDateTime.now());
+    for (Booking pendingBooking : pendingBookings) {
+      pendingBooking.setStatus(BookingStatus.EXPIRED);
+      List<UUID> seatIds = pendingBooking.getBookingSeats()
+          .stream()
+          .map(bookingSeat -> bookingSeat.getSeat().getId())
+          .toList();
+      List<ShowSeat> showSeats = showSeatRepository.findAllByShowAndSeatIds(pendingBooking.getShow(), seatIds);
+      showSeats.forEach(showSeat -> showSeat.setStatus(ShowSeatStatus.AVAILABLE));
     }
 
-    ShowSeat newShowSeat = ShowSeat.builder()
-        .show(show)
-        .seat(seat)
-        .status(ShowSeatStatus.RESERVED)
-        .build();
-
-    try {
-      showSeatRepository.saveAndFlush(newShowSeat);
-    } catch (DataIntegrityViolationException exception) {
-      ShowSeat lockedSeat = showSeatRepository.findByShowIdAndSeatIdForUpdate(show.getId(), seat.getId())
-          .orElseThrow(() -> new IllegalStateException("Seat reservation failed"));
-      if (lockedSeat.getStatus() == ShowSeatStatus.BOOKED) {
-        throw new IllegalStateException("Seat already booked for the selected show");
-      }
-      lockedSeat.setStatus(ShowSeatStatus.BOOKED);
-      showSeatRepository.save(lockedSeat);
-    }
   }
 
   public List<Booking> getBookings() {
