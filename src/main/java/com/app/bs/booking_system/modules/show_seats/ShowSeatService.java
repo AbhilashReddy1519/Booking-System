@@ -14,24 +14,25 @@ import com.app.bs.booking_system.modules.shows.Show;
 public class ShowSeatService {
   private final ShowSeatRepository showSeatRepository;
   private final SeatRepository seatRepository;
+
   public ShowSeatService(ShowSeatRepository showSeatRepository, SeatRepository seatRepository) {
     this.showSeatRepository = showSeatRepository;
     this.seatRepository = seatRepository;
   }
-  
+
   public void createShowSeats(Show show, Screen screen) {
     List<Seat> seats = seatRepository.findAllByScreen(screen);
-    
-    if(seats.isEmpty()) {
+
+    if (seats.isEmpty()) {
       throw new RuntimeException("No seats found for screen");
     }
 
     List<ShowSeat> showSeats = new ArrayList<>();
-    for(Seat seat: seats) {
+    for (Seat seat : seats) {
       ShowSeat showSeat = ShowSeat.builder()
-        .show(show)
-        .seat(seat)
-        .build();
+          .show(show)
+          .seat(seat)
+          .build();
 
       showSeats.add(showSeat);
     }

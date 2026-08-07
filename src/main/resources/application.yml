@@ -3,9 +3,9 @@ spring:
     name: booking-system
 
   datasource:
-    url: jdbc:postgresql://localhost:4001/booking_system
-    username: abhilash
-    password: abhi1234
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_PASSWORD}
+    password: ${SPRING_DATASOURCE_USERNAME}
     driver-class-name: org.postgresql.Driver
     hikari:
       data-source-properties:
@@ -20,6 +20,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+razorpay:
+  key:
+    id: ${RAZORPAY_ID}
+    secret: ${RAZORPAY_SECRET}
 
 server:
   port: 4000

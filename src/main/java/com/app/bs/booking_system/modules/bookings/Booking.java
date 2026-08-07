@@ -1,5 +1,6 @@
 package com.app.bs.booking_system.modules.bookings;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +42,9 @@ public class Booking {
 
   @Enumerated(EnumType.STRING)
   private BookingStatus status;
+
+  @Column(nullable = false, precision = 10, scale = 2)
+  private BigDecimal amount;
 
   @ManyToOne
   @JoinColumn(name = "show_id")

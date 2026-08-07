@@ -1,5 +1,6 @@
 package com.app.bs.booking_system.modules.show_seats;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.app.bs.booking_system.modules.seats.Seat;
@@ -50,6 +51,10 @@ public class ShowSeat {
   @Column(nullable = false)
   @Builder.Default
   private ShowSeatStatus status = ShowSeatStatus.AVAILABLE;
+
+  @Builder.Default
+  @Column(nullable = false, precision = 10, scale = 2)
+  private BigDecimal price = BigDecimal.valueOf(100.00);
 
   @Version
   private Long version;
