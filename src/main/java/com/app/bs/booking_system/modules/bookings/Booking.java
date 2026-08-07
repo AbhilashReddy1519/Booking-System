@@ -56,6 +56,7 @@ public class Booking {
   private List<BookingSeat> bookingSeats;
 
   @OneToOne(mappedBy = "booking")
+  @JsonManagedReference("booking-payment")
   private Payment payment;
 
   @Column(name = "expires_at")

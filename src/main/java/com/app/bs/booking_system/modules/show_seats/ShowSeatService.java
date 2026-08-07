@@ -2,6 +2,7 @@ package com.app.bs.booking_system.modules.show_seats;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -9,15 +10,18 @@ import com.app.bs.booking_system.modules.screens.Screen;
 import com.app.bs.booking_system.modules.seats.Seat;
 import com.app.bs.booking_system.modules.seats.SeatRepository;
 import com.app.bs.booking_system.modules.shows.Show;
+import com.app.bs.booking_system.modules.shows.ShowRepository;
 
 @Service
 public class ShowSeatService {
   private final ShowSeatRepository showSeatRepository;
   private final SeatRepository seatRepository;
+  private final ShowRepository showRepository;
 
-  public ShowSeatService(ShowSeatRepository showSeatRepository, SeatRepository seatRepository) {
+  public ShowSeatService(ShowSeatRepository showSeatRepository, SeatRepository seatRepository, ShowRepository showRepository) {
     this.showSeatRepository = showSeatRepository;
     this.seatRepository = seatRepository;
+    this.showRepository = showRepository;
   }
 
   public void createShowSeats(Show show, Screen screen) {
@@ -39,5 +43,11 @@ public class ShowSeatService {
     if (!showSeats.isEmpty()) {
       showSeatRepository.saveAll(showSeats);
     }
+  }
+
+  public List<ShowSeat> getShowSeats(UUID showId) {
+    Show show = showRepository.findById(showId)
+      .orElseThrow(() -> new RuntimeException("show not found"));
+    return showSeatRepository.findByShow(show);
   }
 }

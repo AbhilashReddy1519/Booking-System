@@ -41,4 +41,28 @@ public class SeatService {
     return seatRepository.findAllByScreen(screen);
   } 
 
+  public List<Seat> createSeats(Screen screen) {
+    List<Seat> seats = new ArrayList<>();
+    for (char i = 'A'; i <= 'J'; i++) {
+      for (int j = 1; j <= 10; j++) {
+        StringBuilder seatName = new StringBuilder("");
+        seatName.append(i);
+        seatName.append('-');
+        seatName.append(j);
+
+        Seat seat = Seat.builder()
+            .seatName(seatName.toString())
+            .screen(screen)
+            .build();
+        seats.add(seat);
+      }
+    }
+    seatRepository.saveAll(seats);
+    return seatRepository.findAllByScreen(screen);
+  }
+
+  public List<Seat> getSeats() {
+    return seatRepository.findAll();
+  }
+
 }

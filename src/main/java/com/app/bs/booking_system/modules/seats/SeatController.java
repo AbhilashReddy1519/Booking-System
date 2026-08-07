@@ -2,6 +2,7 @@ package com.app.bs.booking_system.modules.seats;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,5 +22,10 @@ public class SeatController {
   @PostMapping("")
   public List<Seat> createSeats(@RequestBody CreateSeatsDTO seatDTO) {
     return seatService.createSeats(seatDTO);
+  }
+
+  @GetMapping("")
+  public List<Seat> createSeats() {
+    return seatService.getSeats();
   }
 }

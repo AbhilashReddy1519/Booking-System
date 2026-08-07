@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.app.bs.booking_system.modules.bookings.Booking;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,6 +43,7 @@ public class Payment {
 
   @OneToOne
   @JoinColumn(name = "booking_id", nullable = false, unique = true)
+  @JsonBackReference("booking-payment")
   private Booking booking;
 
   @Column(nullable = false, unique = true)

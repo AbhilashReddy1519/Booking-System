@@ -1,5 +1,6 @@
 package com.app.bs.booking_system.modules.bookings;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.app.bs.booking_system.modules.booking_seat.BookingSeat;
 import com.app.bs.booking_system.modules.booking_seat.BookingSeatRepository;
 import com.app.bs.booking_system.modules.bookings.dto.CreateBookingDTO;
+import com.app.bs.booking_system.modules.payment.Payment;
+import com.app.bs.booking_system.modules.payment.PaymentService;
 import com.app.bs.booking_system.modules.show_seats.ShowSeat;
 import com.app.bs.booking_system.modules.show_seats.ShowSeatRepository;
 import com.app.bs.booking_system.modules.show_seats.ShowSeatStatus;
@@ -20,6 +23,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class BookingService {
+  private final PaymentService paymentService;
   private final BookingSeatRepository bookingSeatRepository;
   private final BookingRepository bookingRepository;
   private final ShowRepository showRepository;
@@ -28,11 +32,12 @@ public class BookingService {
   public BookingService(
       BookingRepository bookingRepository,
       ShowRepository showRepository,
-      ShowSeatRepository showSeatRepository, BookingSeatRepository bookingSeatRepository) {
+      ShowSeatRepository showSeatRepository, BookingSeatRepository bookingSeatRepository, PaymentService paymentService) {
     this.bookingRepository = bookingRepository;
     this.showRepository = showRepository;
     this.showSeatRepository = showSeatRepository;
     this.bookingSeatRepository = bookingSeatRepository;
+    this.paymentService = paymentService;
   }
 
   @Transactional
@@ -47,10 +52,14 @@ public class BookingService {
     }
     seatIds.sort(UUID::compareTo);
     List<ShowSeat> showSeats = showSeatRepository.findAllByShowIdAndSeatIdForUpdate(show, seatIds);
+    BigDecimal amount = showSeats.stream()
+        .map(ShowSeat::getPrice)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     Booking booking = Booking.builder()
         .show(show)
         .status(BookingStatus.PROCESSING)
+        .amount(amount)
         .build();
 
     bookingRepository.save(booking);
@@ -76,6 +85,8 @@ public class BookingService {
     bookingSeatRepository.saveAll(bookingSeats);
     booking.setBookingSeats(bookingSeats);
     booking.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+    Payment payment = paymentService.createPayment(booking);
+    booking.setPayment(payment);
     return booking;
   }
 
