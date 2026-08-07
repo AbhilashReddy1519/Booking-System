@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +18,11 @@ public class PaymentController {
 
   @PostMapping("/create-order")
   public ResponseEntity<?> createOrder(@RequestParam UUID bookingId) {
-    return ResponseEntity.ok(paymentService.createOrder(bookingId));
+    try {
+      return ResponseEntity.ok(paymentService.createOrder(bookingId));
+    } catch (Exception e) {
+      return ResponseEntity.ok(e);
+    }
   }
 
   // @PostMapping("/verify")

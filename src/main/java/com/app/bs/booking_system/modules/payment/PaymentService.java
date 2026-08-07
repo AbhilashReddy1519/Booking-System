@@ -20,7 +20,7 @@ public class PaymentService {
   private final BookingRepository bookingRepository;
 
   @Transactional
-  public Order creatOrder(UUID bookingId) throws Exception {
+  public Order createOrder(UUID bookingId) throws Exception {
     Booking booking = bookingRepository.findById(bookingId)
         .orElseThrow(() -> new RuntimeException("Booking not found"));
     

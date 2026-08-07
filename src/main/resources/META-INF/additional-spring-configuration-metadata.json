@@ -8,5 +8,55 @@
     "name": "razorpay.key.secret",
     "type": "java.lang.String",
     "description": "A description for 'razorpay.key.secret'"
+  },
+  {
+    "name": "SPRING_DATASOURCE_URL",
+    "type": "java.lang.String",
+    "description": "A description for 'SPRING_DATASOURCE_URL'"
+  },
+  {
+    "name": "SPRING_DATASOURCE_PASSWORD",
+    "type": "java.lang.String",
+    "description": "A description for 'SPRING_DATASOURCE_PASSWORD'"
+  },
+  {
+    "name": "SPRING_DATASOURCE_USERNAME",
+    "type": "java.lang.String",
+    "description": "A description for 'SPRING_DATASOURCE_USERNAME'"
+  },
+  {
+    "name": "SPRING_DATASOURCE_URL",
+    "type": "java.lang.String",
+    "description": "A description for 'SPRING_DATASOURCE_URL'"
+  },
+  {
+    "name": "SPRING_JPA_HIBERNATE_DDL_AUTO",
+    "type": "java.lang.String",
+    "description": "A description for 'SPRING_JPA_HIBERNATE_DDL_AUTO'"
+  },
+  {
+    "name": "SPRING_SQL_INIT_MODE",
+    "type": "java.lang.String",
+    "description": "A description for 'SPRING_SQL_INIT_MODE'"
+  },
+  {
+    "name": "POSTGRES_DB",
+    "type": "java.lang.String",
+    "description": "A description for 'POSTGRES_DB'"
+  },
+  {
+    "name": "POSTGRES_USER",
+    "type": "java.lang.String",
+    "description": "A description for 'POSTGRES_USER'"
+  },
+  {
+    "name": "POSTGRES_PASSWORD",
+    "type": "java.lang.String",
+    "description": "A description for 'POSTGRES_PASSWORD'"
+  },
+  {
+    "name": "SPRING_DATASOURCE_URL",
+    "type": "java.lang.String",
+    "description": "A description for 'SPRING_DATASOURCE_URL'"
   }
 ]}

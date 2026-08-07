@@ -2,7 +2,7 @@ services:
   booking-system-db:
     image: postgres:16
     container_name: booking_system_db
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env
     ports:
