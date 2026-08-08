@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.bs.booking_system.modules.shows.dto.CreateShowDTO;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -24,7 +26,7 @@ public class ShowController {
   }
 
   @PostMapping("")
-  public Show createShow(@RequestBody CreateShowDTO showDTO) {
+  public Show createShow(@Valid @RequestBody CreateShowDTO showDTO) {
     return showService.createShow(showDTO);
   }
   

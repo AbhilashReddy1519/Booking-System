@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.bs.booking_system.modules.seats.dto.CreateSeatsDTO;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/seats")
 public class SeatController {
@@ -20,7 +22,7 @@ public class SeatController {
   }
 
   @PostMapping("")
-  public List<Seat> createSeats(@RequestBody CreateSeatsDTO seatDTO) {
+  public List<Seat> createSeats(@Valid @RequestBody CreateSeatsDTO seatDTO) {
     return seatService.createSeats(seatDTO);
   }
 

@@ -9,6 +9,8 @@ import com.app.bs.booking_system.modules.bookings.dto.CreateBookingDTO;
 import com.app.bs.booking_system.modules.payment.Payment;
 import com.app.bs.booking_system.modules.payment.PaymentService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -32,7 +34,7 @@ public class BookingController {
   }
 
   @PostMapping("")
-  public BookingResponse createBooking(@RequestBody CreateBookingDTO createBookingDTO) {
+  public BookingResponse createBooking(@Valid @RequestBody CreateBookingDTO createBookingDTO) {
     Booking booking = bookingService.createBooking(createBookingDTO);
     Payment payment = paymentService.createPayment(booking.getId());
     

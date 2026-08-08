@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.bs.booking_system.modules.languages.dto.CreateLanguageDTO;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -24,7 +26,7 @@ public class LanguageController {
   }
 
   @PostMapping("")
-  public Language createLanguage(@RequestBody CreateLanguageDTO language) {
+  public Language createLanguage(@Valid @RequestBody CreateLanguageDTO language) {
     return languageService.createLanguage(language);
   }
   
