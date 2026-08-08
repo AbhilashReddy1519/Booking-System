@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.app.bs.booking_system.exceptions.ResourceNotFoundException;
 import com.app.bs.booking_system.modules.screens.Screen;
 import com.app.bs.booking_system.modules.screens.ScreenRepository;
 import com.app.bs.booking_system.modules.seats.dto.CreateSeatsDTO;
@@ -21,25 +22,25 @@ public class SeatService {
 
   public List<Seat> createSeats(CreateSeatsDTO seatsDTO) {
     Screen screen = screenRepository.findById(seatsDTO.getScreen_id())
-      .orElseThrow(() -> new RuntimeException("Screen not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Screen not found"));
     List<Seat> seats = new ArrayList<>();
-    for(char i = 'A';i <= 'J';i++) {
-      for(int j = 1;j <= 10;j++) {
+    for (char i = 'A'; i <= 'J'; i++) {
+      for (int j = 1; j <= 10; j++) {
         StringBuilder seatName = new StringBuilder("");
         seatName.append(i);
         seatName.append('-');
         seatName.append(j);
 
         Seat seat = Seat.builder()
-          .seatName(seatName.toString())
-          .screen(screen)
-          .build();
+            .seatName(seatName.toString())
+            .screen(screen)
+            .build();
         seats.add(seat);
       }
     }
     seatRepository.saveAll(seats);
     return seatRepository.findAllByScreen(screen);
-  } 
+  }
 
   public List<Seat> createSeats(Screen screen) {
     List<Seat> seats = new ArrayList<>();

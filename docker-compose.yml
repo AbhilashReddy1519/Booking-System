@@ -12,8 +12,6 @@ services:
     networks:
       - bs
 
-  
-
 volumes:
   booking_system_data:
 

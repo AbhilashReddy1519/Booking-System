@@ -8,11 +8,10 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.app.bs.booking_system.exceptions.ResourceNotFoundException;
 import com.app.bs.booking_system.modules.booking_seat.BookingSeat;
 import com.app.bs.booking_system.modules.booking_seat.BookingSeatRepository;
 import com.app.bs.booking_system.modules.bookings.dto.CreateBookingDTO;
-import com.app.bs.booking_system.modules.payment.Payment;
-import com.app.bs.booking_system.modules.payment.PaymentService;
 import com.app.bs.booking_system.modules.show_seats.ShowSeat;
 import com.app.bs.booking_system.modules.show_seats.ShowSeatRepository;
 import com.app.bs.booking_system.modules.show_seats.ShowSeatStatus;
@@ -23,7 +22,6 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class BookingService {
-  private final PaymentService paymentService;
   private final BookingSeatRepository bookingSeatRepository;
   private final BookingRepository bookingRepository;
   private final ShowRepository showRepository;
@@ -32,18 +30,17 @@ public class BookingService {
   public BookingService(
       BookingRepository bookingRepository,
       ShowRepository showRepository,
-      ShowSeatRepository showSeatRepository, BookingSeatRepository bookingSeatRepository, PaymentService paymentService) {
+      ShowSeatRepository showSeatRepository, BookingSeatRepository bookingSeatRepository) {
     this.bookingRepository = bookingRepository;
     this.showRepository = showRepository;
     this.showSeatRepository = showSeatRepository;
     this.bookingSeatRepository = bookingSeatRepository;
-    this.paymentService = paymentService;
   }
 
   @Transactional
   public Booking createBooking(CreateBookingDTO createBookingDTO) {
     Show show = showRepository.findById(createBookingDTO.getShow_id())
-        .orElseThrow(() -> new RuntimeException("Show not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Show not found"));
 
     // Sort to acquire locks consistently
     List<UUID> seatIds = new ArrayList<>(createBookingDTO.getSeat_ids());
@@ -85,9 +82,23 @@ public class BookingService {
     bookingSeatRepository.saveAll(bookingSeats);
     booking.setBookingSeats(bookingSeats);
     booking.setExpiresAt(LocalDateTime.now().plusMinutes(5));
-    Payment payment = paymentService.createPayment(booking);
-    booking.setPayment(payment);
     return booking;
+  }
+
+  @Transactional
+  public void bookingSuccess(UUID bookingId) {
+    Booking booking = bookingRepository.findById(bookingId)
+      .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+    booking.setStatus(BookingStatus.BOOKED);
+    List<BookingSeat> bookingSeats = bookingSeatRepository.findByBooking(booking);
+    List<UUID> seatIds = bookingSeats.stream()
+        .map(bookingSeat -> bookingSeat.getSeat().getId())
+        .toList();
+    List<ShowSeat> showSeats = showSeatRepository.findAllByShowIdAndSeatIdForUpdate(booking.getShow(), seatIds);
+
+    for(ShowSeat showSeat: showSeats) {
+      showSeat.setStatus(ShowSeatStatus.BOOKED);
+    }
   }
 
   @Transactional

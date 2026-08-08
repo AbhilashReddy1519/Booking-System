@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.app.bs.booking_system.exceptions.ResourceNotFoundException;
 import com.app.bs.booking_system.modules.screens.Screen;
 import com.app.bs.booking_system.modules.seats.Seat;
 import com.app.bs.booking_system.modules.seats.SeatRepository;
@@ -18,7 +19,8 @@ public class ShowSeatService {
   private final SeatRepository seatRepository;
   private final ShowRepository showRepository;
 
-  public ShowSeatService(ShowSeatRepository showSeatRepository, SeatRepository seatRepository, ShowRepository showRepository) {
+  public ShowSeatService(ShowSeatRepository showSeatRepository, SeatRepository seatRepository,
+      ShowRepository showRepository) {
     this.showSeatRepository = showSeatRepository;
     this.seatRepository = seatRepository;
     this.showRepository = showRepository;
@@ -28,7 +30,7 @@ public class ShowSeatService {
     List<Seat> seats = seatRepository.findAllByScreen(screen);
 
     if (seats.isEmpty()) {
-      throw new RuntimeException("No seats found for screen");
+      throw new ResourceNotFoundException("No seats found for screen");
     }
 
     List<ShowSeat> showSeats = new ArrayList<>();
@@ -47,7 +49,7 @@ public class ShowSeatService {
 
   public List<ShowSeat> getShowSeats(UUID showId) {
     Show show = showRepository.findById(showId)
-      .orElseThrow(() -> new RuntimeException("show not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("show not found"));
     return showSeatRepository.findByShow(show);
   }
 }

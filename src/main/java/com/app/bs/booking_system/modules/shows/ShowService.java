@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.app.bs.booking_system.exceptions.ResourceNotFoundException;
 import com.app.bs.booking_system.modules.languages.Language;
 import com.app.bs.booking_system.modules.languages.LanguageRepository;
 import com.app.bs.booking_system.modules.movies.Movie;
@@ -39,19 +40,19 @@ public class ShowService {
 
   public Show createShow(CreateShowDTO showDTO) {
     Movie movie = movieRepository.findById(showDTO.getMovieId())
-      .orElseThrow(() -> new RuntimeException("Movie is not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Movie is not found"));
     Screen screen = screenRepository.findById(showDTO.getScreenId())
-      .orElseThrow(() -> new RuntimeException("Screen is not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Screen is not found"));
     Language language = languageRepository.findById(showDTO.getLanguageId())
-      .orElseThrow(() -> new RuntimeException("Language is not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Language is not found"));
 
     Show show = Show.builder()
-      .startDateTime(showDTO.getStartDateTime())
-      .endDateTime(showDTO.getEndDateTime())
-      .movie(movie)
-      .screen(screen)
-      .language(language)
-      .build();
+        .startDateTime(showDTO.getStartDateTime())
+        .endDateTime(showDTO.getEndDateTime())
+        .movie(movie)
+        .screen(screen)
+        .language(language)
+        .build();
 
     Show savedShow = showRepository.save(show);
     // Create showSeats
