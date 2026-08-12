@@ -54,7 +54,6 @@ public class PaymentService {
     return order;
   }
 
-  @Transactional
   public boolean verifyPayment(VerifyPayment request) {
     try {
       // 1. Verify Razorpay signature
@@ -119,19 +118,28 @@ public class PaymentService {
       if (expectedAmount != paidAmount) {
         throw new IllegalStateException("Payment amount mismatch");
       }
-      // 13. Update our Payment
-      payment.setRazorpayPaymentId(request.getRazorpayPaymentId());
-      payment.setStatus(PaymentStatus.SUCCESS);
-      paymentRepository.save(payment);
-      // 14. Confirm booking
-      booking.setStatus(BookingStatus.BOOKED);
-      bookingRepository.save(booking);
-      // 15. Finally book the seats
-      // seatService.confirmSeats(booking);
-      return true;
+      
+      return finalizeBooking(payment.getId(), booking.getId());
     } catch (Exception e) {
       throw new RuntimeException("Payment verification failed", e);
     }
+  }
+
+  @Transactional
+  protected boolean finalizeBooking(UUID paymentId, UUID bookingId) {
+    Payment payment = paymentRepository.findById(paymentId)
+        .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
+    Booking booking = bookingRepository.findById(bookingId)
+        .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+    if (!payment.getBooking().getId().equals(booking.getId())) {
+      throw new IllegalStateException("Payment does not belong to the booking");
+    }
+    if (payment.getStatus() != PaymentStatus.SUCCESS) {
+      throw new IllegalStateException("Payment is not successful");
+    }
+    booking.setStatus(BookingStatus.BOOKED);
+    bookingRepository.save(booking);
+    return true;
   }
 
   public void confirmBooking(UUID bookingId) {
