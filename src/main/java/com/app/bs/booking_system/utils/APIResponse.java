@@ -4,6 +4,9 @@ public record APIResponse<T>(boolean success, String message, T data) {
     public static <T> APIResponse<T> success(T data) {
         return new APIResponse<>(true, "Success", data);
     }
+    public static <T> APIResponse<T> success(String message) {
+        return new APIResponse<>(true, message, null);
+    }
 
     public static <T> APIResponse<T> success(T data, String message) {
         return new APIResponse<>(true, message, data);

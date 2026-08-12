@@ -137,7 +137,7 @@ public class PaymentService {
     if (payment.getStatus() != PaymentStatus.SUCCESS) {
       throw new IllegalStateException("Payment is not successful");
     }
-    booking.setStatus(BookingStatus.BOOKED);
+    bookingService.bookingSuccess(bookingId);
     bookingRepository.save(booking);
     return true;
   }
