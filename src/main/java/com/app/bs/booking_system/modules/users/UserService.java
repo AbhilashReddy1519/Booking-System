@@ -2,11 +2,9 @@ package com.app.bs.booking_system.modules.users;
 
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.app.bs.booking_system.exceptions.APIException;
 import com.app.bs.booking_system.exceptions.UnauthorizedException;
 import com.app.bs.booking_system.modules.users.dto.LoginDTO;
 import com.app.bs.booking_system.modules.users.dto.LoginResponse;
@@ -25,7 +23,7 @@ public class UserService {
   private final JWTService jwtService;
 
   public APIResponse<?> createUser(UserCreateDTO dto) {
-    Optional<User> user = userRespository.findByEmail(dto.getEmail());
+    Optional<User> user = userRepository.findByEmail(dto.getEmail());
     if(user.isPresent()) {
       return APIResponse.error("User with email already exists");
     }
@@ -35,7 +33,7 @@ public class UserService {
         .passwordHash(passwordEncoder.encode(dto.getPassword()))
         .role(Role.CUSTOMER)
         .build();
-    newUser = userRespository.save(newUser);
+    newUser = userRepository.save(newUser);
       
     return APIResponse.success(
       UserCreatedResponseDTO.builder()
