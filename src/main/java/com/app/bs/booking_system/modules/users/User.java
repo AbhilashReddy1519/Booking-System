@@ -1,9 +1,6 @@
-package com.app.bs.booking_system.modules.seats;
+package com.app.bs.booking_system.modules.users;
 
 import java.util.UUID;
-
-import com.app.bs.booking_system.modules.screens.Screen;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,10 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,25 +18,22 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "seats")
-public class Seat {
+@Table(name = "users")
+public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @NotBlank(message = "Seat name should not be empty")
-  private String seatName;
+  @Column(nullable = false, unique = true)
+  private String email;
+
+  @Column(nullable = false)
+  private String passwordHash;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private SeatCategory seatCategory;
-
-  @ManyToOne
-  @JoinColumn(name = "screen_id")
-  @JsonIgnore
-  private Screen screen;
+  private Role role;
 }

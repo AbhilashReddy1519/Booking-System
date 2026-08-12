@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.app.bs.booking_system.modules.booking_seat.BookingSeat;
 import com.app.bs.booking_system.modules.payment.Payment;
 import com.app.bs.booking_system.modules.shows.Show;
+import com.app.bs.booking_system.modules.users.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -45,6 +46,10 @@ public class Booking {
 
   @Column(nullable = false, precision = 10, scale = 2)
   private BigDecimal amount;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
   @ManyToOne
   @JoinColumn(name = "show_id")

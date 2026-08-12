@@ -1,6 +1,5 @@
 package com.app.bs.booking_system.modules.payment;
 
-import com.app.bs.booking_system.modules.bookings.BookingService;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -9,7 +8,7 @@ import com.app.bs.booking_system.config.RazorpayConfig;
 import com.app.bs.booking_system.exceptions.ResourceNotFoundException;
 import com.app.bs.booking_system.modules.bookings.Booking;
 import com.app.bs.booking_system.modules.bookings.BookingRepository;
-import com.app.bs.booking_system.modules.bookings.BookingStatus;
+import com.app.bs.booking_system.modules.bookings.BookingService;
 import com.app.bs.booking_system.modules.payment.dto.VerifyPayment;
 import com.app.bs.booking_system.modules.payment.services.RazorpayService;
 import com.razorpay.Order;
@@ -58,67 +57,53 @@ public class PaymentService {
     try {
       // 1. Verify Razorpay signature
       String payload = request.getRazorpayOrderId() + "|" + request.getRazorpayPaymentId();
-
-      boolean signatureValid = Utils.verifySignature(payload, request.getSignature(),razorpayConfig.getKeySecret());
-
+      boolean signatureValid = Utils.verifySignature(payload, request.getSignature(), razorpayConfig.getKeySecret());
       if (!signatureValid) {
         throw new IllegalStateException("Invalid Razorpay signature");
       }
       // 2. Find OUR payment using OUR Razorpay order ID
       Payment payment = paymentRepository.findByRazorpayOrderId(request.getRazorpayOrderId())
           .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
-
       // 3. Get OUR booking
       Booking booking = payment.getBooking();
-
       // 4. Make sure request booking matches
       if (!booking.getId().equals(request.getBookingId())) {
         throw new IllegalStateException("Booking does not match payment");
       }
-
       // 5. Idempotency
       if (payment.getStatus() == PaymentStatus.SUCCESS) {
         return true;
       }
-
       // 6. Fetch payment directly from Razorpay
       com.razorpay.Payment razorpayPayment = razorpayService.getPayment(request.getRazorpayPaymentId());
-
       // 7. Check payment ID
       if (!request.getRazorpayPaymentId().equals(razorpayPayment.get("id"))) {
         throw new IllegalStateException("Payment ID mismatch");
       }
-
       // 8. Check order ID
       if (!request.getRazorpayOrderId().equals(razorpayPayment.get("order_id"))) {
         throw new IllegalStateException("Order ID mismatch");
       }
-
       // 9. Check payment belongs to our order
       if (!payment.getRazorpayOrderId().equals(razorpayPayment.get("order_id"))) {
         throw new IllegalStateException("Payment does not belong to our order");
       }
-
       // 10. Check status
       if (!"captured".equals(razorpayPayment.get("status"))) {
         throw new IllegalStateException("Payment is not captured");
       }
-
       // 11. Check currency
       if (!"INR".equals(razorpayPayment.get("currency"))) {
         throw new IllegalStateException("Invalid currency");
       }
-
       // 12. Check amount
       long expectedAmount = booking.getAmount()
           .movePointRight(2)
           .longValueExact();
-
       long paidAmount = ((Number) razorpayPayment.get("amount")).longValue();
       if (expectedAmount != paidAmount) {
         throw new IllegalStateException("Payment amount mismatch");
       }
-      
       return finalizeBooking(payment.getId(), booking.getId());
     } catch (Exception e) {
       throw new RuntimeException("Payment verification failed", e);
@@ -134,11 +119,10 @@ public class PaymentService {
     if (!payment.getBooking().getId().equals(booking.getId())) {
       throw new IllegalStateException("Payment does not belong to the booking");
     }
-    if (payment.getStatus() != PaymentStatus.SUCCESS) {
-      throw new IllegalStateException("Payment is not successful");
-    }
+    payment.setRazorpayPaymentId(booking.getId().toString());
+    payment.setStatus(PaymentStatus.SUCCESS);
+    paymentRepository.save(payment);
     bookingService.bookingSuccess(bookingId);
-    bookingRepository.save(booking);
     return true;
   }
 

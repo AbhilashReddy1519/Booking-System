@@ -20,6 +20,14 @@ public class SeatService {
     this.screenRepository = screenRepository;
   }
 
+  private SeatCategory categoryForRow(char row) {
+    if (row <= 'C')
+      return SeatCategory.PREMIUM;
+    if (row <= 'G')
+      return SeatCategory.REGULAR;
+    return SeatCategory.RECLINER;
+  }
+
   public List<Seat> createSeats(CreateSeatsDTO seatsDTO) {
     Screen screen = screenRepository.findById(seatsDTO.getScreen_id())
         .orElseThrow(() -> new ResourceNotFoundException("Screen not found"));
@@ -34,6 +42,7 @@ public class SeatService {
         Seat seat = Seat.builder()
             .seatName(seatName.toString())
             .screen(screen)
+            .seatCategory(categoryForRow(i))
             .build();
         seats.add(seat);
       }

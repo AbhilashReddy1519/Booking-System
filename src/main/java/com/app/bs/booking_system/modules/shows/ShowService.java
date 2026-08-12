@@ -56,7 +56,7 @@ public class ShowService {
 
     Show savedShow = showRepository.save(show);
     // Create showSeats
-    showSeatService.createShowSeats(savedShow, screen);
+    showSeatService.createShowSeats(savedShow, screen, showDTO.getCategoryPrices());
     return savedShow;
   }
 

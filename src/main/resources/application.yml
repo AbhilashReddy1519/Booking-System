@@ -27,5 +27,7 @@ razorpay:
     id: ${RAZORPAY_ID}
     secret: ${RAZORPAY_SECRET}
 
+jwt:
+  secret_key: ${JWT_SECRET_KEY}
 server:
   port: 4000
