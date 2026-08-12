@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.app.bs.booking_system.modules.users.Role;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -32,5 +33,13 @@ public class JWTService {
         )
         .signWith(secretKey)
         .compact();
+  }
+
+  public Claims parseToken(String token) {
+    return Jwts.parser() 
+        .verifyWith(secretKey)
+        .build()
+        .parseSignedClaims(token)
+        .getPayload();
   }
 }

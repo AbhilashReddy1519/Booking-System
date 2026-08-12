@@ -17,6 +17,8 @@ import com.app.bs.booking_system.modules.show_seats.ShowSeatRepository;
 import com.app.bs.booking_system.modules.show_seats.ShowSeatStatus;
 import com.app.bs.booking_system.modules.shows.Show;
 import com.app.bs.booking_system.modules.shows.ShowRepository;
+import com.app.bs.booking_system.modules.users.User;
+import com.app.bs.booking_system.modules.users.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -25,23 +27,26 @@ public class BookingService {
   private final BookingSeatRepository bookingSeatRepository;
   private final BookingRepository bookingRepository;
   private final ShowRepository showRepository;
+  private final UserRepository userRepository;
   private final ShowSeatRepository showSeatRepository;
 
   public BookingService(
       BookingRepository bookingRepository,
       ShowRepository showRepository,
-      ShowSeatRepository showSeatRepository, BookingSeatRepository bookingSeatRepository) {
+      ShowSeatRepository showSeatRepository, BookingSeatRepository bookingSeatRepository, UserRepository userRepository) {
     this.bookingRepository = bookingRepository;
     this.showRepository = showRepository;
     this.showSeatRepository = showSeatRepository;
     this.bookingSeatRepository = bookingSeatRepository;
+    this.userRepository = userRepository;
   }
 
   @Transactional
-  public Booking createBooking(CreateBookingDTO createBookingDTO) {
+  public Booking createBooking(CreateBookingDTO createBookingDTO, UUID userId) {
     Show show = showRepository.findById(createBookingDTO.getShow_id())
         .orElseThrow(() -> new ResourceNotFoundException("Show not found"));
-
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     // Sort to acquire locks consistently
     List<UUID> seatIds = new ArrayList<>(createBookingDTO.getSeat_ids());
     if (seatIds.contains(null)) {
@@ -56,6 +61,7 @@ public class BookingService {
     Booking booking = Booking.builder()
         .show(show)
         .status(BookingStatus.PROCESSING)
+        .user(user)
         .amount(amount)
         .build();
 

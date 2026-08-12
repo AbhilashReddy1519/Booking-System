@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.bs.booking_system.modules.users.dto.LoginDTO;
 import com.app.bs.booking_system.modules.users.dto.UserCreateDTO;
 import com.app.bs.booking_system.utils.APIResponse;
 
@@ -21,4 +22,10 @@ public class UserController {
   public APIResponse<?> createUser(@Valid @RequestBody UserCreateDTO dto) {
     return userService.createUser(dto);
   }
+
+  @PostMapping("/login")
+  public APIResponse<?> login(@Valid @RequestBody LoginDTO dto) {
+    return userService.login(dto);
+  }
+    
 }

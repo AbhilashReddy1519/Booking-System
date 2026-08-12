@@ -2,11 +2,17 @@ package com.app.bs.booking_system.modules.users;
 
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.app.bs.booking_system.exceptions.APIException;
+import com.app.bs.booking_system.exceptions.UnauthorizedException;
+import com.app.bs.booking_system.modules.users.dto.LoginDTO;
+import com.app.bs.booking_system.modules.users.dto.LoginResponse;
 import com.app.bs.booking_system.modules.users.dto.UserCreateDTO;
 import com.app.bs.booking_system.modules.users.dto.UserCreatedResponseDTO;
+import com.app.bs.booking_system.security.JWTService;
 import com.app.bs.booking_system.utils.APIResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -14,8 +20,10 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-  private final UserRepository userRespository;
+  private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JWTService jwtService;
+
   public APIResponse<?> createUser(UserCreateDTO dto) {
     Optional<User> user = userRespository.findByEmail(dto.getEmail());
     if(user.isPresent()) {
@@ -36,5 +44,22 @@ public class UserService {
       .role(newUser.getRole().toString())
       .build(), 
       "User created successfully");
+  }
+
+  public APIResponse<?> login(LoginDTO dto) {
+    User user = userRepository.findByEmail(dto.getEmail())
+      .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+
+    if (!passwordEncoder.matches(dto.getPassword(), user.getPasswordHash())) {
+      throw new UnauthorizedException("Invalid credentials");
+    }
+    String token = jwtService.generateToken(user.getId(),user.getRole());
+
+    return APIResponse.success(
+      LoginResponse.builder()
+        .email(user.getEmail())
+        .token(token)
+        .build()
+      , "User logged in successfully");
   }
 }

@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -34,8 +36,8 @@ public class BookingController {
   }
 
   @PostMapping("")
-  public BookingResponse createBooking(@Valid @RequestBody CreateBookingDTO createBookingDTO) {
-    Booking booking = bookingService.createBooking(createBookingDTO);
+  public BookingResponse createBooking(@Valid @RequestBody CreateBookingDTO createBookingDTO, @AuthenticationPrincipal UUID userId) {
+    Booking booking = bookingService.createBooking(createBookingDTO, userId);
     Payment payment = paymentService.createPayment(booking.getId());
     
     return BookingResponse.builder()

@@ -63,6 +63,7 @@ public class SeatService {
         Seat seat = Seat.builder()
             .seatName(seatName.toString())
             .screen(screen)
+            .seatCategory(categoryForRow(i))
             .build();
         seats.add(seat);
       }
