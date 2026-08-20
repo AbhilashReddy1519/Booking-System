@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -28,9 +30,8 @@ public class ScreenController {
 
 
   @PostMapping("")
-  public Screen createScreen(@Valid @RequestBody CreateScreenRequestDTO screen) {
-    Screen result = screenService.createScreen(screen);  
-    return result;
+  public Screen createScreen(@Valid @RequestBody CreateScreenRequestDTO screen, @AuthenticationPrincipal UUID userId) {
+    return screenService.createScreen(screen, userId);  
   }
 
   @GetMapping("")
